@@ -155,12 +155,12 @@ class MyGame(arcade.Window):
         pile.position = START_X + X_SPACING, BOTTOM_Y
         self.pile_mat_list.append(pile)
 
-        ###################################################################################################################### Needs to change for diff modes #####################################################
+        #/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\ to change for diff modes /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
         # Create the seven middle piles
         for i in range(7):
             pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_OLIVE_GREEN)
-            pile.position = START_X + i * X_SPACING, MIDDLE_Y
-            # pile.position = self.pile_mat_list[i].center_x, \
+            pile.position = START_X + i * X_SPACING, TOP_Y - MAT_HEIGHT - MAT_HEIGHT * VERTICAL_MARGIN_PERCENT
+            #pile.position = self.pile_mat_list[i].center_x, \
             #                     self.pile_mat_list[i].center_y - CARD_VERTICAL_OFFSET * (i)
             self.pile_mat_list.append(pile)
 
@@ -405,12 +405,18 @@ class MyGame(arcade.Window):
         # Find the closest pile, in case we are in contact with more than one
         pile, distance = arcade.get_closest_sprite(self.held_cards[0], self.pile_mat_list)
         reset_position = True
+        pile_index = self.pile_mat_list.index(pile)
 
         # See if we are in contact with the closest pile
-        if arcade.check_for_collision(self.held_cards[0], pile):
+        if(len(self.piles[pile_index]) > 0):
+            tmp = self.piles[pile_index][-1]
+        else:
+            tmp = pile
+        
+        if arcade.check_for_collision(self.held_cards[0], tmp):
 
             # What pile is it?
-            pile_index = self.pile_mat_list.index(pile)
+            #pile_index = self.pile_mat_list.index(pile)
 
             #  Is it the same pile we came from?
             if pile_index == self.get_pile_for_card(self.held_cards[0]):
@@ -431,7 +437,6 @@ class MyGame(arcade.Window):
                     print("pilecard_val=", self.get_intvalue(top_card))
                     print("handcard_val=", self.get_intvalue(hand_card))
                     isValid = self.check_valid_klondike_drop(top_card, hand_card)######################
-                    print("isvalid=", isValid)
                     if isValid:
                         for i, dropped_card in enumerate(self.held_cards):
                             dropped_card.position = top_card.center_x, \
@@ -445,7 +450,7 @@ class MyGame(arcade.Window):
                 else:
                     # Are there no cards in the middle play pile?
                     check_king = self.get_intvalue(self.held_cards[0])
-                    print("checkking = ", check_king)
+                    print("check_king = ", check_king)
                     if(check_king != 13):
                         reset_position = True
                     else:
