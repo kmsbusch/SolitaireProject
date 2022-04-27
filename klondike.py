@@ -408,12 +408,12 @@ class MyGame(arcade.Window):
         pile_index = self.pile_mat_list.index(pile)
 
         # See if we are in contact with the closest pile
-        if(len(self.piles[pile_index]) > 0):
+        if(len(self.piles[pile_index]) > 0): ############### if there are cards on the pile, the hitbox should be at the bottom of the pile, where players will drop cards
             tmp = self.piles[pile_index][-1]
         else:
-            tmp = pile
+            tmp = pile ########## if nothing is in the pile, the hitbox for card detection is on the pile
         
-        if arcade.check_for_collision(self.held_cards[0], tmp):
+        if arcade.check_for_collision(self.held_cards[0], tmp): ######### determine where card hitbox is based on above
 
             # What pile is it?
             #pile_index = self.pile_mat_list.index(pile)
