@@ -87,6 +87,8 @@ class Board(object):
                 
                 cls._state = []
 
+                cls.observers = []
+
                 # arcade.set_background_color(arcade.color.AMAZON)
 
                 # List of cards we are dragging with the mouse
@@ -104,22 +106,50 @@ class Board(object):
                 #cls.setup()
         return cls._instance
     
-    # save func for cards for pickle?
-    # def set_memento(cls, memento):
-    #     previous_state = pickle.loads(memento)
-    #     vars(cls).clear()
-    #     vars(cls).update(previous_state)
+    def subscribe(self, observer):
+        self.observers.append(observer)
+        print("subscribed " + observer.name)
+        
+    def unsubscribe(self, observer):
+        self.observers.remove(observer)
+        print("unsubscribed " + observer.name)
 
-    # def create_memento(cls):
-    #     picklefile = open('card_state','wb')
-    #     temp_pile = []
-    #     for x in cls.piles:
-    #         #print(x)
-    #         if len(x) > 0:
-    #             for card in x:
-    #                 pickle.dump(card, picklefile)
-    #             # pickle.dump(x, picklefile)
-    #     return picklefile.close()
+    def notify_observers(self, value):
+        for observer in self.observers:
+            observer.up(value)    
+    
+    #ave func for cards for pickle?
+    def set_memento(cls, memento):
+        previous_state = pickle.load(memento)
+        #vars(cls).clear()
+        #vars(cls).update(previous_state)
+        cls.piles = previous_state
+        cls.pile_mat_list.draw()
+        cls.card_list.draw()
+        # pass
+        # for i, pile in enumerate(previous_state):
+        #     cls.piles[i] = pile
+        # return cls.piles
+
+    def create_memento(cls):
+        picklefile = open('card_state','wb')
+        temp_pile = []
+        pickle.dump(cls.piles, picklefile)
+        # for x in cls.piles:
+        #     print(x)
+        #     if len(x) > 0:
+        #         for card in x:
+        #             temp = card.pickle_card(picklefile = open('card_pickle','wb'))
+        #             temp.close()
+        #             pickle.dump(temp, picklefile)
+        #         # pickle.dump(x, picklefile)
+        picklefile.close()
+
+    # def pickle_board(self):
+    #     return pickle.dump(self)
+    
+    # def unpickle_board(self):
+    #     return pickle.load(self)
 
     def setup(cls):
         """ Set up the game here. Call this function to restart the game. """
@@ -208,15 +238,22 @@ class Board(object):
         for i in range(PLAY_PILE_1, PLAY_PILE_7 + 1):
             cls.piles[i][-1].face_up()
     
-    
-        
-    
+    def check_win(cls):
+        won = False
+        for x in range(2, 9):
+            if len(cls.piles[x]) == 0:
+                won = True
+            else:
+                won = False
+        return won
+
     def pull_to_top(self, card: arcade.Sprite):
         """ Pull card to top of rendering order (last to render, looks on-top) """
 
         # Remove, and append to the end
         self.card_list.remove(card)
         self.card_list.append(card)
+
     
     
     def remove_card_from_pile(self, card):
@@ -237,12 +274,13 @@ class Board(object):
         ############################################################## Maybe make a seperate function to check if valid drop and call it here
         ############################################################## Function can also take in a ruleset in args in order to work with multiple gametypes
         """ Move the card to a new pile """
+        self.create_memento()
         self.remove_card_from_pile(card)
         #self.check_valid_klondike_drop(card, pile_index)
         self.piles[pile_index].append(card)
-        # momento = self.create_memento()
-        # self._state = self.piles
-        # self.set_memento(momento)
+        if self.check_win():
+            self.notify_observers(self.check_win())
+        
     
     def get_intvalue(self, card):
         if (card.value == "A"):
@@ -284,5 +322,6 @@ class Board(object):
             return False
         else:
             return True
+        
     
     

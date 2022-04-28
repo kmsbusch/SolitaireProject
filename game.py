@@ -16,13 +16,17 @@ SCREEN_TITLE = "Drag and Drop Cards"
 
 class Game(arcade.Window):
     """ Main application class. """
+    
     game_board = None
+    undoflag = False
 
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         arcade.set_background_color(arcade.color.AMAZON)
         self.game_board = board.Board("klondike")
         self.game_board.setup()
+        win_cond = Observer("Win Condition")
+        self.game_board.subscribe(win_cond)
         print(self.game_board)
         
     
@@ -49,6 +53,18 @@ class Game(arcade.Window):
         if symbol == arcade.key.R:
             # Restart
             self.game_board.setup()
+        if symbol == arcade.key.U:
+            self.undoflag = True
+            picklefile = open('card_state','rb')
+            self.game_board.set_memento(picklefile)
+            picklefile.close()
+             # Draw the mats the cards go on to
+            self.game_board.pile_mat_list.draw()
+
+            # Draw the cards
+            self.game_board.card_list.draw()
+            
+           
             
     def on_mouse_press(self, x, y, button, key_modifiers):
         """ Called when the user presses a mouse button. """
@@ -238,6 +254,7 @@ class Game(arcade.Window):
 
         # We are no longer holding cards
         self.game_board.held_cards = []
+        
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ User moves mouse """
@@ -247,7 +264,15 @@ class Game(arcade.Window):
             card.center_x += dx
             card.center_y += dy
 
-    
+class Observer(object):
+    def __init__(self,name):
+        super().__init__()
+        self.name = name
+
+    def update(self, value):
+        #if win condition is met, do something otherwise nothing
+        if value:
+            print(" you won ")
 
         
 """
