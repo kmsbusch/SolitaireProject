@@ -5,7 +5,7 @@ import pickle
 from typing import Optional
 
 from sympy import N
-import card
+import cardsprite
 import board
 
 # Screen title and size
@@ -20,13 +20,28 @@ class Game(arcade.Window):
 
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+        arcade.set_background_color(arcade.color.AMAZON)
         self.game_board = board.Board("klondike")
         self.game_board.setup()
+        print(self.game_board)
+        
     
     def get_board(self):
+        print(self.game_board)
         return self.game_board
     
+    def on_draw(self):
+        """ Render the screen. """
+        # Clear the screen
+        self.clear()
+
+        # Draw the mats the cards go on to
+        self.game_board.pile_mat_list.draw()
+
+        # Draw the cards
+        self.game_board.card_list.draw()
     
+
     
 
         

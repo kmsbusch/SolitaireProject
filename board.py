@@ -5,7 +5,7 @@ import pickle
 from typing import Optional
 
 from sympy import N
-from card import Card
+from cardsprite import CardSprite
 import game
 
 
@@ -74,8 +74,10 @@ TOP_PILE_4 = 12
 
 
 class Board(object):
+    #Singleton Private 
     _instance = None
     
+    #Singleton Implementation
     def __new__(cls, ruleset):
         if cls._instance is None:
             cls._instance = super(Board, cls).__new__(cls)
@@ -85,7 +87,7 @@ class Board(object):
                 
                 cls._state = []
 
-                arcade.set_background_color(arcade.color.AMAZON)
+                # arcade.set_background_color(arcade.color.AMAZON)
 
                 # List of cards we are dragging with the mouse
                 cls.held_cards = None
@@ -102,25 +104,24 @@ class Board(object):
                 #cls.setup()
         return cls._instance
     
-# save func for cards for pickle?
-    def set_memento(cls, memento):
-        previous_state = pickle.loads(memento)
-        vars(cls).clear()
-        vars(cls).update(previous_state)
+    # save func for cards for pickle?
+    # def set_memento(cls, memento):
+    #     previous_state = pickle.loads(memento)
+    #     vars(cls).clear()
+    #     vars(cls).update(previous_state)
 
-    def create_memento(cls):
-        picklefile = open('card_state','wb')
-        temp_pile = []
-        for x in cls.piles:
-            #print(x)
-            if len(x) > 0:
-                for card in x:
-                    pickle.dump(card, picklefile)
-                # pickle.dump(x, picklefile)
-        return picklefile.close()
+    # def create_memento(cls):
+    #     picklefile = open('card_state','wb')
+    #     temp_pile = []
+    #     for x in cls.piles:
+    #         #print(x)
+    #         if len(x) > 0:
+    #             for card in x:
+    #                 pickle.dump(card, picklefile)
+    #             # pickle.dump(x, picklefile)
+    #     return picklefile.close()
 
     def setup(cls):
-
         """ Set up the game here. Call this function to restart the game. """
 
         # List of cards we are dragging with the mouse
@@ -167,7 +168,7 @@ class Board(object):
         # Create every card
         for card_suit in CARD_SUITS:
             for card_value in CARD_VALUES:
-                card = Card(card_suit, card_value, CARD_SCALE)
+                card = CardSprite(card_suit, card_value, CARD_SCALE)
                 card.position = START_X, BOTTOM_Y
                 cls.card_list.append(card)
 
@@ -207,16 +208,7 @@ class Board(object):
         for i in range(PLAY_PILE_1, PLAY_PILE_7 + 1):
             cls.piles[i][-1].face_up()
     
-    def on_draw(self):
-        """ Render the screen. """
-        # Clear the screen
-        self.clear()
-
-        # Draw the mats the cards go on to
-        self.pile_mat_list.draw()
-
-        # Draw the cards
-        self.card_list.draw()
+    
         
     
     def pull_to_top(self, card: arcade.Sprite):
@@ -243,7 +235,7 @@ class Board(object):
 
             # Might be a stack of cards, get the top one
             primary_card = cards[-1]
-            assert isinstance(primary_card, Card)
+            assert isinstance(primary_card, CardSprite)
 
             # Figure out what pile the card is in
             pile_index = self.get_pile_for_card(primary_card)
@@ -328,9 +320,9 @@ class Board(object):
         self.remove_card_from_pile(card)
         #self.check_valid_klondike_drop(card, pile_index)
         self.piles[pile_index].append(card)
-        momento = self.create_memento()
-        self._state = self.piles
-        self.set_memento(momento)
+        # momento = self.create_memento()
+        # self._state = self.piles
+        # self.set_memento(momento)
     
     def get_intvalue(self, card):
         if (card.value == "A"):

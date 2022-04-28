@@ -1,8 +1,9 @@
 import arcade
 import pickle
+import collections
 FACE_DOWN_IMAGE = ":resources:images/cards/cardBack_red2.png"
 
-class Card(arcade.Sprite):
+class CardSprite(arcade.Sprite):
     """ Card sprite """
 
     def __init__(self, suit, value, scale=1):
@@ -35,11 +36,11 @@ class Card(arcade.Sprite):
             self.card_list.remove(card)
             self.card_list.append(card)
 
-    def pickle_card(self):
-        return pickle.dump(self)
+    # def pickle_card(self):
+    #     return pickle.dump(self)
     
-    def unpickle_card(self):
-        return pickle.load(self)
+    # def unpickle_card(self):
+    #     return pickle.load(self)
 
     @property
     def is_face_down(self):

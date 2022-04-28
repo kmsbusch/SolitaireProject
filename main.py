@@ -3,7 +3,7 @@ Code base referenced from https://api.arcade.academy/en/latest/tutorials/card_ga
 Changes were added from there
 """
 from typing import Optional
-import card
+import cardsprite
 import board
 import game
 
@@ -525,9 +525,9 @@ def main():
     
     window = game.Game()
     game_board = window.get_board()
-    game_board.setup()
+    #game_board.setup()
     
-    game_board.create_memento()
+    # game_board.create_memento()
     arcade.run()
 
 
