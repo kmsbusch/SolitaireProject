@@ -3,7 +3,7 @@ Code base referenced from https://api.arcade.academy/en/latest/tutorials/card_ga
 Changes were added from there
 """
 from typing import Optional
-import cardsprite
+import card
 import board
 import game
 

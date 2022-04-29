@@ -5,7 +5,7 @@ import pickle
 from typing import Optional
 
 from sympy import N
-from cardsprite import CardSprite
+from card import Card
 import game
 
 
@@ -116,16 +116,24 @@ class Board(object):
 
     def notify_observers(self, value):
         for observer in self.observers:
-            observer.up(value)    
+            observer.update(value)    
     
     #ave func for cards for pickle?
     def set_memento(cls, memento):
         previous_state = pickle.load(memento)
         #vars(cls).clear()
         #vars(cls).update(previous_state)
-        cls.piles = previous_state
-        cls.pile_mat_list.draw()
-        cls.card_list.draw()
+        cls.piles = previous_state[0]
+        index = 0
+        for x, pile in enumerate(cls.piles):
+            for i, card in enumerate(pile):
+                card.position = previous_state[1][index]
+                # card.center_y = previous_state[1][index][1]
+                pile[i] = card
+                index += 1
+        #cls.pile_mat_list.draw()
+        #cls.card_list.draw()
+        
         # pass
         # for i, pile in enumerate(previous_state):
         #     cls.piles[i] = pile
@@ -133,8 +141,13 @@ class Board(object):
 
     def create_memento(cls):
         picklefile = open('card_state','wb')
-        temp_pile = []
-        pickle.dump(cls.piles, picklefile)
+        card_pos = []
+        for pile in cls.piles:
+            for card in pile:
+                card_pos.append(card.position)
+                
+        piles_and_positions = [cls.piles, card_pos] 
+        pickle.dump(piles_and_positions, picklefile)
         # for x in cls.piles:
         #     print(x)
         #     if len(x) > 0:
@@ -198,7 +211,7 @@ class Board(object):
         # Create every card
         for card_suit in CARD_SUITS:
             for card_value in CARD_VALUES:
-                card = CardSprite(card_suit, card_value, CARD_SCALE)
+                card = Card(card_suit, card_value, CARD_SCALE)
                 card.position = START_X, BOTTOM_Y
                 cls.card_list.append(card)
 
@@ -224,9 +237,10 @@ class Board(object):
                 # Put in the proper pile
                 cls.piles[pile_no].append(card)
                 # Move card to same position as pile we just put it in
-                #card.position = cls.pile_mat_list[pile_no].position
                 card.position = cls.pile_mat_list[pile_no].center_x, \
                                 cls.pile_mat_list[pile_no].center_y - CARD_VERTICAL_OFFSET * (j)
+                # card.center_x = cls.pile_mat_list[pile_no].center_x
+                # card.center_y = cls.pile_mat_list[pile_no].center_y - CARD_VERTICAL_OFFSET * (j)
                 # Put on top in draw order
                 cls.pull_to_top(card)
                 #top_card = cls.piles[pile_no][-1]

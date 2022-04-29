@@ -4,8 +4,9 @@ import pickle
 import collections
 FACE_DOWN_IMAGE = ":resources:images/cards/cardBack_red2.png"
 
-class CardSprite(arcade.Sprite):
+class Card(arcade.Sprite):
     """ Card sprite """
+    # _position = (START_X, START_Y)
 
     def __init__(self, suit, value, scale=1):
         """ Card constructor """
@@ -13,13 +14,16 @@ class CardSprite(arcade.Sprite):
         # Attributes for suit and value
         self.suit = suit
         self.value = value
+        
 
     
         # Image to use for the sprite when face up
         self.image_file_name = f":resources:images/cards/card{self.suit}{self.value}.png"
         self.is_face_up = False
         super().__init__(FACE_DOWN_IMAGE, scale, hit_box_algorithm="None")
-
+        # self.center_x = position[0]
+        # self.center_y = position[1]
+        
     def __getstate__(self):
         return [self.suit, self.value, self.image_file_name, self.is_face_up]
     
