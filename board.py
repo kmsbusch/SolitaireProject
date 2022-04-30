@@ -258,11 +258,10 @@ class Board(object):
     #Function to work with observer 
     def check_win(cls):
         won = False
-        for x in range(9, 13): #for the top piles
-            if len(cls.piles[x]) == 13:
-                won = True
-            else:
-                won = False
+        if ((len(cls.piles[9]) == 13) and (len(cls.piles[10]) == 13) and (len(cls.piles[11]) == 13) and (len(cls.piles[12]) == 13)): 
+            won = True
+        else:
+            won = False
         return won
 
     def pull_to_top(self, card: arcade.Sprite):
