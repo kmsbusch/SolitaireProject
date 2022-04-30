@@ -258,8 +258,8 @@ class Board(object):
     #Function to work with observer 
     def check_win(cls):
         won = False
-        for x in range(2, 9):
-            if len(cls.piles[x]) == 0:
+        for x in range(9, 13): #for the top piles
+            if len(cls.piles[x]) == 13:
                 won = True
             else:
                 won = False
