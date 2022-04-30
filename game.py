@@ -4,8 +4,10 @@ import pickle
 from typing import Optional
 
 from sympy import N
-from card import Card
+from card_elements import Card
 import board
+
+#Code referenced from https://api.arcade.academy/en/latest/tutorials/card_game/index.html 
 
 # Screen title and size
 SCREEN_WIDTH = 1024
@@ -26,11 +28,9 @@ class Game(arcade.Window):
         self.game_board.setup()
         win_cond = Observer("Win Condition")
         self.game_board.subscribe(win_cond)
-        print(self.game_board)
         
     
     def get_board(self):
-        print(self.game_board)
         return self.game_board
     
     def on_draw(self):
@@ -43,7 +43,6 @@ class Game(arcade.Window):
 
         # Draw the cards
         self.game_board.card_list.draw()
-    
     
     
     
@@ -81,7 +80,6 @@ class Game(arcade.Window):
             # Figure out what pile the card is in
             pile_index = self.game_board.get_pile_for_card(primary_card)
 
-            ###################################################################################################################### Inside of func needs to be diff or need another one or smth ############################
             # Are we clicking on the bottom deck, to flip three cards?
             if pile_index == board.BOTTOM_FACE_DOWN_PILE:
                 # Flip three cards
@@ -102,7 +100,7 @@ class Game(arcade.Window):
                     # Put on top draw-order wise
                     self.game_board.pull_to_top(card)
 
-            elif primary_card.is_face_down: ############################################################## Change this so that cards in middle pile auto flip instead of requiring a click #############
+            elif primary_card.is_face_down:
                 # Is the card face down? In one of those middle 7 piles? Then flip up
                 primary_card.face_up()
             else:
@@ -175,7 +173,6 @@ class Game(arcade.Window):
                 pass
 
             # Is it on a middle play pile?
-            ##################################################################################### Function to check valid drop needs to be called here as well
             elif board.PLAY_PILE_1 <= pile_index <= board.PLAY_PILE_7:
                 
                 # Are there already cards there?
@@ -185,8 +182,6 @@ class Game(arcade.Window):
                     top_card = self.game_board.piles[pile_index][-1]
                     #hand_card is the card at the top of the list of cards in our hand
                     hand_card = self.game_board.held_cards[0]
-                    print("pilecard_val=", self.game_board.get_intvalue(top_card))
-                    print("handcard_val=", self.game_board.get_intvalue(hand_card))
                     isValid = self.game_board.check_valid_klondike_drop(top_card, hand_card)######################
                     if isValid:
                         for i, dropped_card in enumerate(self.game_board.held_cards):
@@ -201,7 +196,6 @@ class Game(arcade.Window):
                 else:
                     # Are there no cards in the middle play pile?
                     check_king = self.game_board.get_intvalue(self.game_board.held_cards[0])
-                    print("check_king = ", check_king)
                     if(check_king != 13):
                         reset_position = True
                     else:
@@ -222,7 +216,7 @@ class Game(arcade.Window):
                 #reset_position = False
 
             # Release on top play pile? And only one card held?
-            elif board.TOP_PILE_1 <= pile_index <= board.TOP_PILE_4 and len(self.game_board.held_cards) == 1: ######################################################### doesnt this if elif elif statement need an else?
+            elif board.TOP_PILE_1 <= pile_index <= board.TOP_PILE_4 and len(self.game_board.held_cards) == 1:
                 # Move position of card to pile
                 
                 if len(self.game_board.piles[pile_index]) == 0:
@@ -236,7 +230,7 @@ class Game(arcade.Window):
                             self.game_board.move_card_to_new_pile(card, pile_index)
                         reset_position = False
                 else:
-                    isValid = self.game_board.check_valid_top_drop(self.game_board.piles[pile_index][-1], self.game_board.held_cards[0])######################
+                    isValid = self.game_board.check_valid_top_drop(self.game_board.piles[pile_index][-1], self.game_board.held_cards[0])
                     if isValid:
                         self.game_board.held_cards[0].position = pile.position
                         # Move card to card list
@@ -273,28 +267,3 @@ class Observer(object):
         if value:
             print(" you won ")
 
-        
-"""
-Capture and externalize an object's internal state so that the object
-can be restored to this state later, without violating encapsulation.
-"""
-
-"""
-class Originator:
-  
-    Create a memento containing a snapshot of its current internal
-    state.
-    Use the memento to restore its internal state.
-   
-
-    def __init__(self):
-  """       
-
-    
-
-
-# def main():
-#     originator = Originator()
-#     memento = originator.create_memento()
-#     originator._state = True
-#     originator.set_memento(memento)

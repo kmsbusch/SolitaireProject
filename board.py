@@ -5,9 +5,13 @@ import pickle
 from typing import Optional
 
 from sympy import N
-from card import Card
+import card_elements
+from card_elements import Card_Factory_By_Suit as CF
 import game
 
+
+
+#Code referenced from https://api.arcade.academy/en/latest/tutorials/card_game/index.html 
 
 # Constants for sizing
 CARD_SCALE = 0.6
@@ -106,6 +110,8 @@ class Board(object):
                 #cls.setup()
         return cls._instance
     
+    #Observer implementation
+    #Referenced from 
     def subscribe(self, observer):
         self.observers.append(observer)
         print("subscribed " + observer.name)
@@ -118,7 +124,9 @@ class Board(object):
         for observer in self.observers:
             observer.update(value)    
     
-    #ave func for cards for pickle?
+    
+    #Memento Implementation
+    #Referenced from 
     def set_memento(cls, memento):
         previous_state = pickle.load(memento)
         #vars(cls).clear()
@@ -148,21 +156,8 @@ class Board(object):
                 
         piles_and_positions = [cls.piles, card_pos] 
         pickle.dump(piles_and_positions, picklefile)
-        # for x in cls.piles:
-        #     print(x)
-        #     if len(x) > 0:
-        #         for card in x:
-        #             temp = card.pickle_card(picklefile = open('card_pickle','wb'))
-        #             temp.close()
-        #             pickle.dump(temp, picklefile)
-        #         # pickle.dump(x, picklefile)
         picklefile.close()
 
-    # def pickle_board(self):
-    #     return pickle.dump(self)
-    
-    # def unpickle_board(self):
-    #     return pickle.load(self)
 
     def setup(cls):
         """ Set up the game here. Call this function to restart the game. """
@@ -207,13 +202,20 @@ class Board(object):
 
         # Sprite list with all the cards, no matter what pile they are in.
         cls.card_list = arcade.SpriteList()
-
+        
         # Create every card
+        #Factory Implementation
+        #Referenced from https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Factory.html
         for card_suit in CARD_SUITS:
-            for card_value in CARD_VALUES:
-                card = Card(card_suit, card_value, CARD_SCALE)
-                card.position = START_X, BOTTOM_Y
-                cls.card_list.append(card)
+            temp_card_list = []
+            temp_card_list = CF.create_card(card_suit)
+            for temp in temp_card_list:
+                cls.card_list.append(temp)
+            # cls.card_list = cls.card_list + temp_card_list
+            # for card_value in CARD_VALUES:
+            #     card = Card(card_suit, card_value, CARD_SCALE)
+            #     card.position = START_X, BOTTOM_Y
+            
 
         # Shuffle the cards
         for pos1 in range(len(cls.card_list)):
@@ -252,6 +254,8 @@ class Board(object):
         for i in range(PLAY_PILE_1, PLAY_PILE_7 + 1):
             cls.piles[i][-1].face_up()
     
+    
+    #Function to work with observer 
     def check_win(cls):
         won = False
         for x in range(2, 9):
@@ -284,9 +288,7 @@ class Board(object):
                 return index
     
     #new version of this
-    def move_card_to_new_pile(self, card, pile_index): ############### This is where the logic for checking if valid card to drop on should go (?)
-        ############################################################## Maybe make a seperate function to check if valid drop and call it here
-        ############################################################## Function can also take in a ruleset in args in order to work with multiple gametypes
+    def move_card_to_new_pile(self, card, pile_index): 
         """ Move the card to a new pile """
         self.create_memento()
         self.remove_card_from_pile(card)
@@ -312,10 +314,6 @@ class Board(object):
     def check_valid_klondike_drop(self, pile_card, hand_card):
         pilecard_val = self.get_intvalue(pile_card)
         handcard_val = self.get_intvalue(hand_card)
-        #pilecard_val = 2
-        #handcard_val = 1
-        print("handcard_val=", handcard_val)
-        print("pilecard_val=", pilecard_val)
 
         if ((hand_card.suit == "Hearts" or hand_card.suit == "Diamonds") and (pile_card.suit == "Hearts" or pile_card.suit == "Diamonds")):
             return False
